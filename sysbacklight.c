@@ -31,8 +31,8 @@ struct sysfs_class_device *find_brightness_device(void)
         return NULL;
     }
 
-    struct sysfs_class_device *iter;
-    struct sysfs_attribute *attr;
+    struct sysfs_class_device *iter=NULL;
+    struct sysfs_attribute *attr=NULL;
 
     dlist_for_each_data(backlights, iter, struct sysfs_class_device)
     {
@@ -104,8 +104,8 @@ int main(int argc, char **argv)
 {
     struct sysfs_class_device *dev;
 
-    enum OP op;
-    double value;
+    enum OP op=INC;
+    double value=0;
 
     dev = find_brightness_device();
     if(!dev)
