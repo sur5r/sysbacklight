@@ -7,6 +7,7 @@
 #include <libsysfs.h>
 
 enum OP {
+    QUERY,
     SET,
     INC,
     DEC
@@ -46,6 +47,24 @@ struct sysfs_class_device *find_brightness_device(void)
     return NULL;
 }
 
+double get_brightness(struct sysfs_class_device *dev)
+{
+    struct sysfs_attribute *attr;
+    double brightness=0;
+    double max_brightness=0;
+
+    if((attr=sysfs_get_classdev_attr(dev, "max_brightness")))
+    {
+        max_brightness = strtod(attr->value, NULL);
+    }
+    if((attr=sysfs_get_classdev_attr(dev, "brightness")))
+    {
+        brightness = strtod(attr->value, NULL);
+    }
+
+    return (brightness / max_brightness) * 100;
+}
+
 bool set_brightness(struct sysfs_class_device *dev, enum OP op, double value)
 {
     struct sysfs_attribute *attr;
@@ -81,6 +100,10 @@ bool set_brightness(struct sysfs_class_device *dev, enum OP op, double value)
         case DEC:
             brightness -= (max_brightness / 100) * value;
             break;
+
+        default:
+            // This is not supposed to happen
+            return false;
     }
 
     if(brightness > max_brightness)
@@ -104,7 +127,7 @@ int main(int argc, char **argv)
 {
     struct sysfs_class_device *dev;
 
-    enum OP op=INC;
+    enum OP op=QUERY;
     double value=0;
 
     dev = find_brightness_device();
@@ -114,10 +137,14 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    if(argc >= 3)
+    if(argc >= 2)
     {
         switch(argv[1][0])
         {
+            case '?':
+                op = QUERY;
+                break;
+
             case '=':
                 op = SET;
                 break;
@@ -135,19 +162,35 @@ int main(int argc, char **argv)
                 return 2;
         }
 
-        value = strtod(argv[2], NULL);
+        if(op != QUERY)
+        {
+            if(argc < 3)
+            {
+                fprintf(stderr, "Operation '%c' needs a value argument!\n", argv[1][0]);
+                return 2;
+            }
+            value = strtod(argv[2], NULL);
+        }
+
         if(value < 0 || isnan(value))
         {
             fprintf(stderr, "Invalid brightness value\n");
-            return 3;
+            return 2;
         }
     }
 
-
-    if(!set_brightness(dev, op, value))
+    if(op==QUERY)
     {
-        fprintf(stderr, "Could not set brightness!\n");
-        return 4;
+        value = get_brightness(dev);
+        printf("%.0f\n", value);
+    }
+    else
+    {
+        if(!set_brightness(dev, op, value))
+        {
+            fprintf(stderr, "Could not set brightness!\n");
+            return 3;
+        }
     }
 
     return 0;
