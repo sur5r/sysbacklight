@@ -29,6 +29,6 @@ On Debian, you can install them with:
 ### Increase brightness by 10%
 `sysbacklight + 10`
 
-### Increase brightness by 10%
+### Decrease brightness by 10%
 `sysbacklight - 10`
 
