@@ -4,7 +4,7 @@ LDFLAGS?=$(shell pkg-config --libs libsysfs)
 all: sysbacklight
 
 sysbacklight: sysbacklight.o
-	$(CC) -o $@ $(LDFLAGS) $<
+	$(CC) -o $@ $< $(LDFLAGS)
 
 %.o: %.c
 	$(CC) -c -o $@ $(CFLAGS) $<
