@@ -9,6 +9,9 @@ sysbacklight: sysbacklight.o
 %.o: %.c
 	$(CC) -c -o $@ $(CFLAGS) $<
 
+install:
+	install -m 4755 sysbacklight /usr/bin/
+
 clean:
 	rm -f sysbacklight sysbacklight.o
 
