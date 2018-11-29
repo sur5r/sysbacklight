@@ -1,6 +1,6 @@
-CFLAGS?=$(shell pkg-config --cflags libsysfs) -Wall -std=c99
-LDFLAGS?=$(shell pkg-config --libs libsysfs)
-PREFIX ?= /usr/local
+CFLAGS  ?= $(shell pkg-config --cflags libsysfs) -Wall -std=c99
+LDFLAGS ?= $(shell pkg-config --libs libsysfs)
+PREFIX  ?= /usr/local
 
 all: sysbacklight
 
@@ -12,8 +12,6 @@ sysbacklight: sysbacklight.o
 
 install:
 	install -m 4755 sysbacklight $(DESTDIR)$(PREFIX)/bin 
-
-
 
 clean:
 	rm -f sysbacklight sysbacklight.o
