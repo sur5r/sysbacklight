@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <libsysfs.h>
+#include <sysfs/libsysfs.h>
 
 enum OP {
     QUERY,
